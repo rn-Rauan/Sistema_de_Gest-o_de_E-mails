@@ -6,6 +6,7 @@ import { PrismaEmailRepository } from "./repository/EmailRepository.js";
 import { EmailService } from "./services/Email.Service.js";
 import { EmailController } from "./controllers/email.controller.js";
 import { emailRoutes } from "./routes/Email.routes.js";
+import cors from "@fastify/cors";
 
 // Instanciando o prisma
 const prisma = new PrismaClient();
@@ -21,6 +22,11 @@ const emailController = new EmailController(emailService);
 
 // Criando a aplicação Fastify
 const app = fastify({ logger: true });
+
+// Registrando o CORS
+await app.register(cors, {
+  origin: "*", // Em produção, restrinja para o domínio do seu frontend
+});
 
 // Registrando Swagger
 await app.register(fastifySwagger, {

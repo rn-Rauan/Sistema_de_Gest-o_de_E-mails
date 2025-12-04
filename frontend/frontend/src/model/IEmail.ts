@@ -1,11 +1,11 @@
-export interface EmailEntity {
+export interface EmailEntityFrontend {
   id: number;
-  remetente: string;
+  remetente: string; 
   destinatario: string;
-  dataEnvio: Date;
+  dataEnvio: string; 
   assunto: string;
   corpo: string;
   estado: string | null;
   municipio: string | null;
-  criadoEm: Date;
+  criadoEm: string;
 }
