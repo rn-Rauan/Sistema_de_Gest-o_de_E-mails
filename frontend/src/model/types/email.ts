@@ -1,4 +1,4 @@
-export interface EmailEntityFrontend {
+export interface Email {
   id: number;
   remetente: string; 
   destinatario: string;
