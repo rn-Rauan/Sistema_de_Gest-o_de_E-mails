@@ -4,11 +4,24 @@ import type { EmailCreateDTO } from "../interfaces/EmailCreateDTO.js";
 import type { IEmailService } from "../interfaces/IEmailService.js";
 import type { EmailLocationDTO } from "../interfaces/EmailLocationDTO.js";
 
+class AppError extends Error {
+  statusCode: number;
+  original?: Error;
+  constructor(message: string, statusCode = 500, original?: Error) {
+    super(message);
+    this.name = "AppError";
+    this.statusCode = statusCode;
+    if (original) {
+      this.original = original;
+    }
+  }
+}
+
 /**
  * O EmailService lida com a lógica de negócios, validações complexas e orquestração
  * do processo de envio de e-mail (incluindo a chamada ao repositório para salvar o registro).
  */
-export class EmailService implements IEmailService{
+export class EmailService implements IEmailService {
   private repository: IEmailRepository;
 
   constructor(repository: IEmailRepository) {
@@ -19,28 +32,35 @@ export class EmailService implements IEmailService{
    */
   public async createEmail(data: EmailCreateDTO): Promise<EmailEntity> {
     if (!this.isValidEmail(data.remetente)) {
-        throw new Error(`Remetente inválido: ${data.remetente}` )
+      throw new AppError(`Remetente inválido: ${data.remetente}`, 400);
     }
 
     if (!this.isValidEmail(data.destinatario)) {
-      throw new Error(`Destinatário inválido: ${data.destinatario}`);
+      throw new AppError(`Destinatário inválido: ${data.destinatario}`, 400);
     }
 
     if (!data.assunto?.trim()) {
-      throw new Error("O campo 'assunto' é obrigatório.");
+      throw new AppError("O campo 'assunto' é obrigatório.", 400);
     }
 
     if (!data.corpo?.trim()) {
-      throw new Error("O campo 'corpo' é obrigatório.");
+      throw new AppError("O campo 'corpo' é obrigatório.", 400);
     }
 
     if (!data.dataEnvio) {
       data.dataEnvio = new Date();
+    } else {
+      data.dataEnvio = new Date(data.dataEnvio);
     }
+
     try {
       return await this.repository.create(data);
     } catch (err) {
-      throw new Error(`Erro ao salavar email ${(err as Error).message}`);
+      throw new AppError(
+        `Erro ao salvar email: ${(err as Error).message}`,
+        500,
+        err as Error
+      );
     }
   }
   /**
@@ -48,9 +68,13 @@ export class EmailService implements IEmailService{
    */
   public async getAll(): Promise<EmailEntity[]> {
     try {
-        return await this.repository.findAll();
+      return await this.repository.findAll();
     } catch (err) {
-      throw new Error(`Erro ao buscar emails ${(err as Error).message}`);
+      throw new AppError(
+        `Erro ao buscar emails: ${(err as Error).message}`,
+        500,
+        err as Error
+      );
     }
   }
   /**
@@ -59,19 +83,33 @@ export class EmailService implements IEmailService{
   public async getById(id: number): Promise<EmailEntity> {
     this.isValidId(id);
     try {
-      return await this.repository.findById(id);
+      const email = await this.repository.findById(id);
+      if (!email) {
+        throw new AppError("Email não encontrado", 404);
+      }
+      return email;
     } catch (err) {
-      throw new Error(`Erro ao buscar por ID: ${(err as Error).message}`);
+      // if it's already AppError, repassa; caso contrário, encapsula
+      if (err instanceof AppError) throw err;
+      throw new AppError(
+        `Erro ao buscar por ID: ${(err as Error).message}`,
+        500,
+        err as Error
+      );
     }
   }
   /**
-   * Retorna emails pendentes 
+   * Retorna emails pendentes
    */
   public async getPending(): Promise<EmailEntity[]> {
     try {
       return await this.repository.findPending();
     } catch (err) {
-      throw new Error(`Erro ao buscar pendentes: ${(err as Error).message}`);
+      throw new AppError(
+        `Erro ao buscar pendentes: ${(err as Error).message}`,
+        500,
+        err as Error
+      );
     }
   }
   /**
@@ -79,19 +117,26 @@ export class EmailService implements IEmailService{
    */
   public async updateLocation(
     id: number,
-    location : EmailLocationDTO
+    location: EmailLocationDTO
   ): Promise<EmailEntity> {
-
     this.isValidId(id);
 
-    if (!location.estado|| !location.municipio){
-      throw new Error("estado e municipio obrigatorios");
+    if (!location.estado || !location.municipio) {
+      throw new AppError("estado e municipio obrigatorios", 400);
     }
 
     try {
-      return await this.repository.updateLocation(id, location.estado, location.municipio);
+      return await this.repository.updateLocation(
+        id,
+        location.estado,
+        location.municipio
+      );
     } catch (err) {
-      throw new Error(`Erro ao atualizar localização: ${(err as Error).message}`);
+      throw new AppError(
+        `Erro ao atualizar localização: ${(err as Error).message}`,
+        500,
+        err as Error
+      );
     }
   }
   /**
@@ -105,7 +150,11 @@ export class EmailService implements IEmailService{
     try {
       return await this.repository.countResume();
     } catch (err) {
-      throw new Error(`Erro ao retornar resumo dos emails: ${(err as Error).message}`);
+      throw new AppError(
+        `Erro ao retornar resumo dos emails: ${(err as Error).message}`,
+        500,
+        err as Error
+      );
     }
   }
   /**
@@ -115,7 +164,11 @@ export class EmailService implements IEmailService{
     try {
       return await this.repository.groupByState();
     } catch (err) {
-      throw new Error(`Erro ao agrupar por estado: ${(err as Error).message}`);
+      throw new AppError(
+        `Erro ao agrupar por estado: ${(err as Error).message}`,
+        500,
+        err as Error
+      );
     }
   }
   /**
@@ -125,23 +178,33 @@ export class EmailService implements IEmailService{
     try {
       return await this.repository.tendence7Days();
     } catch (err) {
-      throw new Error(`Erro ao buscar os emails dos ultimos 7 dias: ${(err as Error).message}`);
+      throw new AppError(
+        `Erro ao buscar os emails dos ultimos 7 dias: ${(err as Error).message}`,
+        500,
+        err as Error
+      );
     }
   }
   /**
    * Retorna o top 3 destinatarios
    */
-  public async getTop3Destinations() : Promise<{destinatario: string, count : number}[]>{
-    try{
-        return await this.repository.top3Destinations()
-    }catch(err){
-        throw new Error(`Erro ao retornar o top 3 destinatarios: ${(err as Error).message}`)
+  public async getTop3Destinations(): Promise<
+    { destinatario: string; count: number }[]
+  > {
+    try {
+      return await this.repository.top3Destinations();
+    } catch (err) {
+      throw new AppError(
+        `Erro ao retornar o top 3 destinatarios: ${(err as Error).message}`,
+        500,
+        err as Error
+      );
     }
   }
 
   private isValidId(id: number): boolean {
     if (id < 1 || !Number.isInteger(id)) {
-      throw new Error("Id invalido");
+      throw new AppError("Id invalido", 400);
     }
     return true;
   }
@@ -150,5 +213,4 @@ export class EmailService implements IEmailService{
       /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     return regex.test(email);
   }
-
 }

@@ -43,7 +43,7 @@ export class EmailController {
    */
   public getEmailById = async (req: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { id } = req.params as { id : string};
+      const { id } = req.params as { id: string };
       const numId = Number(id);
       const email: EmailEntity = await this.service.getById(numId);
       return reply.status(200).send(email);
@@ -67,7 +67,7 @@ export class EmailController {
    */
   public updateLocation = async (req: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { id } = req.params as { id: string};
+      const { id } = req.params as { id: string };
       const numId = Number(id);
       const body = req.body as EmailLocationDTO;
       const atualizado = await this.service.updateLocation(numId, body);
@@ -115,10 +115,13 @@ export class EmailController {
       return this.handleError(reply, err);
     }
   };
-  /**   
+  /**
    * Retorna o top 3 destinatarios
    */
-    public getTop3Destinations = async (_req: FastifyRequest, reply: FastifyReply) => {
+  public getTop3Destinations = async (
+    _req: FastifyRequest,
+    reply: FastifyReply
+  ) => {
     try {
       const top = await this.service.getTop3Destinations();
       return reply.status(200).send(top);
@@ -131,8 +134,14 @@ export class EmailController {
    * Metodo para lidar com erro
    */
   private handleError(reply: FastifyReply, err: any) {
-    return reply.status(400).send({
-      error: (err as Error).message ?? "Erro inesperado",
-    });
+    const status = typeof err?.statusCode == "number" ? err.statusCode : 500;
+
+    const payload: Record<string, unknown> = {
+      error: err?.message ?? "Erro inesperado",
+    };
+    if (err?.original?.message) {
+      payload.cause = err.original.message;
+    }
+    return reply.status(status).send(payload);
   }
 }

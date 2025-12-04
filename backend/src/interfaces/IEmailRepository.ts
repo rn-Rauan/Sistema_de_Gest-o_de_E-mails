@@ -4,7 +4,7 @@ import type { EmailCreateDTO } from "./EmailCreateDTO.js";
 export interface IEmailRepository {
   create(data: EmailCreateDTO): Promise<EmailEntity>;
   findAll(): Promise<EmailEntity[]>;
-  findById(id: number): Promise<EmailEntity>;
+  findById(id: number): Promise<EmailEntity | null>;
   findPending(): Promise<EmailEntity[]>;
   updateLocation(
     id: number,

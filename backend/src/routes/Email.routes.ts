@@ -10,8 +10,8 @@ export async function emailRoutes(
   app.get("/email/:id", controller.getEmailById);
   app.get("/email/pendentes", controller.getPending);
   app.put("/email/:id/localizacao", controller.updateLocation);
-  app.get("/email/resumo/contagem", controller.getCountEmails);
-  app.get("/email/resumo/estado", controller.getGroupByState);
-  app.get("/email/resumo/7dias", controller.getTendence7Days);
-  app.get("/email/resumo/top3", controller.getTop3Destinations);
+  app.get("/email/dashboard/contagem", controller.getCountEmails);
+  app.get("/email/dashboard/estado", controller.getGroupByState);
+  app.get("/email/dashboard/7dias", controller.getTendence7Days);
+  app.get("/email/dashboard/top3", controller.getTop3Destinations);
 }

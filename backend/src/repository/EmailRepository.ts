@@ -1,12 +1,13 @@
-import type { EmailEntity } from "../interfaces/EmailEntity.js"
+import type { EmailEntity } from "../interfaces/EmailEntity.js";
 import type { IEmailRepository } from "../interfaces/IEmailRepository.js";
 import type { EmailCreateDTO } from "../interfaces/EmailCreateDTO.js";
-import type { IDatabaseClient } from "../interfaces/IDatabaseClient.js";
+import type { PrismaClient } from "@prisma/client";
 
-export class EmailRepository implements IEmailRepository {
-  private db : IDatabaseClient
-  constructor (database: IDatabaseClient){
-    this.db = database
+
+export class PrismaEmailRepository implements IEmailRepository {
+  private db: PrismaClient;
+  constructor(database: PrismaClient) {
+    this.db = database;
   }
 
   async create(data: EmailCreateDTO): Promise<EmailEntity> {
@@ -17,8 +18,8 @@ export class EmailRepository implements IEmailRepository {
     return await this.db.email.findMany();
   }
 
-  async findById(id: number): Promise<EmailEntity> {
-    return await this.db.email.findFirstOrThrow({
+  async findById(id: number): Promise<EmailEntity | null> {
+    return await this.db.email.findFirst({
       where: { id },
     });
   }
@@ -71,28 +72,36 @@ export class EmailRepository implements IEmailRepository {
       _count: { estado: true },
       orderBy: { _count: { estado: "desc" } },
     });
-    return res.map((r: { estado: string | null; _count: { estado: number } }) => ({
-      estado: r.estado!,
-      count: r._count.estado!,
-    }));
+    return res.map(
+      (r: { estado: string | null; _count: { estado: number } }) => ({
+        estado: r.estado!,
+        count: r._count.estado!,
+      })
+    );
   }
 
   async tendence7Days(): Promise<{ data: string; count: number }[]> {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const results = await this.db.email.groupBy({
-      by: ["dataEnvio"],
+    const results: EmailEntity[] = await this.db.email.findMany({
       where: {
         dataEnvio: { gte: sevenDaysAgo },
       },
-      _count: { dataEnvio: true },
       orderBy: { dataEnvio: "asc" },
     });
 
-    return results.map((r: { dataEnvio: Date; _count: { dataEnvio: number } }) => ({
-      data: r.dataEnvio.toISOString(),
-      count: r._count.dataEnvio,
+    const agrupadosPorData: Record<string, number> = {};
+    for (let i: number = 0; i < results.length; i++) {
+      const email = results[i]!;
+      const dia = email.dataEnvio.toISOString().split("T")[0]!;
+
+      agrupadosPorData[dia] = (agrupadosPorData[dia] || 0) + 1;
+    }
+
+    return Object.entries(agrupadosPorData).map(([data, count]) => ({
+      data,
+      count,
     }));
   }
 
@@ -103,9 +112,11 @@ export class EmailRepository implements IEmailRepository {
       orderBy: { destinatario: "desc" },
       take: 3,
     });
-    return reslt.map((r: { destinatario: string; _count: { destinatario: number } }) => ({
-      destinatario: r.destinatario,
-      count: r._count.destinatario,
-    }));
+    return reslt.map(
+      (r: { destinatario: string; _count: { destinatario: number } }) => ({
+        destinatario: r.destinatario,
+        count: r._count.destinatario,
+      })
+    );
   }
 }
