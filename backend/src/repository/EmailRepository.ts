@@ -3,7 +3,6 @@ import type { IEmailRepository } from "../interfaces/IEmailRepository.js";
 import type { EmailCreateDTO } from "../interfaces/EmailCreateDTO.js";
 import type { PrismaClient } from "@prisma/client";
 
-
 export class PrismaEmailRepository implements IEmailRepository {
   private db: PrismaClient;
   constructor(database: PrismaClient) {
@@ -109,7 +108,11 @@ export class PrismaEmailRepository implements IEmailRepository {
     const reslt = await this.db.email.groupBy({
       by: ["destinatario"],
       _count: { destinatario: true },
-      orderBy: { destinatario: "desc" },
+      orderBy: {
+        _count: {
+          destinatario: "desc",
+        },
+      },
       take: 3,
     });
     return reslt.map(

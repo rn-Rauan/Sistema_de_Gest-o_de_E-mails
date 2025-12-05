@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Email } from "../model/types/email";
-import * as emailService from "../model/services/email.service";
+import { emailService } from "../model/services/email.service";
 
 export type EmailState = {
   emails: Email[];
