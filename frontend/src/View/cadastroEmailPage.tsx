@@ -1,4 +1,4 @@
-import { Sidebar } from "../components/SidBar";
+import { Sidebar } from "../components/sidBar";
 import { useCreateEmailVewModel } from "../viewmodels/useCadastroVewModel";
 
 export default function CadastroEmail() {

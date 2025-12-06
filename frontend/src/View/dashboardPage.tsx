@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { useDashboardViewModel } from "../viewmodels/useDashboardViewModel";
 import { DashboardCards } from "../components/dashboard";
 import { StateProgress } from "../components/progess";
-import { Sidebar } from "../components/SidBar";
 import { TopDestinations } from "../components/topDestinations";
+import { Sidebar } from "../components/sidBar";
 
 export default function DashboardPage () {
   const {
