@@ -64,5 +64,7 @@ export function useHistoricoEmailViewModel() {
     filtrar,
     limparFiltros,
     carregar,
+    loading,
+    error,
   };
 }
