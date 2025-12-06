@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Sidebar } from "../components/sidBar";
+import { Sidebar } from "../components/SidBar";
 import { useHistoricoEmailViewModel } from "../viewmodels/useHistoricoEmailViewModel";
 
 export default function HistoricoEmail() {

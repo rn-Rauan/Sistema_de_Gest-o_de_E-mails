@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { Sidebar } from "../components/sidBar";
+import { Sidebar } from "../components/SidBar";
 import { useEmailDetailsViewModel } from "../viewmodels/useDetalhesViewModel";
 
 export default function DetalhesEmailPage() {

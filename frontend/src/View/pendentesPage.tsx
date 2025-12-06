@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Sidebar } from "../components/sidBar";
+import { Sidebar } from "../components/SidBar";
 import { usePendingViewModel } from "../viewmodels/usePendingViewModel";
 
 export default function PendentesPage() {
