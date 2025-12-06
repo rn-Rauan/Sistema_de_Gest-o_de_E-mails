@@ -36,9 +36,6 @@ export default function PendentesPage() {
           </div>
 
           <div className="space-x-2">
-            <button className="px-4 py-2 bg-white border border-gray-300 rounded shadow hover:bg-gray-50 text-gray-700">
-              Exportar
-            </button>
             <button
               className={`px-4 py-2 bg-indigo-600 text-white rounded shadow hover:bg-indigo-700 font-semibold ${
                 saving ? "opacity-50 cursor-not-allowed" : ""
