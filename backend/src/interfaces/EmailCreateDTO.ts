@@ -4,4 +4,6 @@ export interface EmailCreateDTO {
   dataEnvio: Date | string;
   assunto: string;
   corpo: string;
+  estado: string;
+  municipio: string;
 }

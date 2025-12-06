@@ -3,8 +3,13 @@ generator client {
 }
 
 datasource db {
+  //Armazenamento local:
   provider = "sqlite"
   url      = env("DATABASE_URL")
+
+  //Usando o Supabase
+  //provider = "postgresql"
+  //url      = env("SUPABASE_URL")
 }
 
 model Email {

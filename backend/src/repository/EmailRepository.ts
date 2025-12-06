@@ -79,29 +79,13 @@ export class PrismaEmailRepository implements IEmailRepository {
     );
   }
 
-  async tendence7Days(): Promise<{ data: string; count: number }[]> {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-    const results: EmailEntity[] = await this.db.email.findMany({
+  async findEmailsFrom(date: Date): Promise<EmailEntity[]> {
+    return await this.db.email.findMany({
       where: {
-        dataEnvio: { gte: sevenDaysAgo },
+        dataEnvio: { gte: date },
       },
       orderBy: { dataEnvio: "asc" },
     });
-
-    const agrupadosPorData: Record<string, number> = {};
-    for (let i: number = 0; i < results.length; i++) {
-      const email = results[i]!;
-      const dia = email.dataEnvio.toISOString().split("T")[0]!;
-
-      agrupadosPorData[dia] = (agrupadosPorData[dia] || 0) + 1;
-    }
-
-    return Object.entries(agrupadosPorData).map(([data, count]) => ({
-      data,
-      count,
-    }));
   }
 
   async top3Destinations(): Promise<{ destinatario: string; count: number }[]> {

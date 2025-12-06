@@ -17,6 +17,6 @@ export interface IEmailRepository {
     pendentes: number;
   }>;
   groupByState(): Promise<{ estado: string; count: number }[]>;
-  tendence7Days(): Promise<{ data: string; count: number }[]>;
+  findEmailsFrom(date: Date): Promise<EmailEntity[]>;
   top3Destinations(): Promise<{ destinatario: string; count: number }[]>;
 }

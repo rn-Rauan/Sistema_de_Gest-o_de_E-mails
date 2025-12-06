@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useSidebarViewModel } from "../viewmodels/useSidBarViewModel";
 
 export function Sidebar() {
@@ -11,33 +11,52 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 p-4 space-y-2">
-        <Link to="/" className="block px-4 py-3 bg-indigo-800 rounded-lg">
+        <NavLink
+          to="/"
+          className={({ isActive }) =>
+            `block px-4 py-3 rounded-lg ${
+              isActive ? "bg-indigo-800" : "hover:bg-indigo-800"
+            }`
+          }
+        >
           📊 Dashboard
-        </Link>
+        </NavLink>
 
-        <Link
+        <NavLink
           to="/pendentes"
-          className="block px-4 py-3 hover:bg-indigo-800 rounded-lg flex items-center"
+          className={({ isActive }) =>
+            `block px-4 py-3 rounded-lg flex items-center ${
+              isActive ? "bg-indigo-800" : "hover:bg-indigo-800"
+            }`
+          }
         >
           ⚠️ Pendentes
           <span className="bg-yellow-500 text-xs font-bold px-2 py-1 rounded-full ml-2 text-indigo-900">
             {pendingCount}
           </span>
-        </Link>
+        </NavLink>
 
-        <Link
+        <NavLink
           to="/cadastro"
-          className="block px-4 py-3 hover:bg-indigo-800 rounded-lg"
+          className={({ isActive }) =>
+            `block px-4 py-3 rounded-lg ${
+              isActive ? "bg-indigo-800" : "hover:bg-indigo-800"
+            }`
+          }
         >
           📝 Cadastro Manual
-        </Link>
+        </NavLink>
 
-        <Link
+        <NavLink
           to="/historico"
-          className="block px-4 py-3 hover:bg-indigo-800 rounded-lg"
+          className={({ isActive }) =>
+            `block px-4 py-3 rounded-lg ${
+              isActive ? "bg-indigo-800" : "hover:bg-indigo-800"
+            }`
+          }
         >
           📂 Histórico
-        </Link>
+        </NavLink>
       </nav>
     </aside>
   );

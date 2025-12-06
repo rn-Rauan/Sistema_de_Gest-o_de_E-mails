@@ -27,8 +27,8 @@ export function DashboardCards({dados}: DashboardProps) {
           Pendentes
         </div>
         <div className="text-4xl font-bold mt-2 text-yellow-600">{dados.pendentes}</div>
-        <a className="text-xs text-blue-600 hover:underline mt-2 block">
-          Resolver agora →
+        <a className="text-xs text-blue-600 hover:underline mt-2 block" href="/pendentes">
+          Resolver agora
         </a>
       </div>
 

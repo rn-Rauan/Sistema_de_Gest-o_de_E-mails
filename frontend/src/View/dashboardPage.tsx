@@ -5,7 +5,7 @@ import { StateProgress } from "../components/progess";
 import { TopDestinations } from "../components/topDestinations";
 import { useDashboardViewModel } from "../viewmodels/useDashboardViewModel";
 
-const DashboardPage = () => {
+export default function DashboardPage () {
   const {
     resume,
     byState,
@@ -15,7 +15,6 @@ const DashboardPage = () => {
     loadDashboard
   } = useDashboardViewModel();
 
-
   useEffect(() => {
     loadDashboard();
   }, []);
@@ -24,12 +23,10 @@ const DashboardPage = () => {
     <div className="bg-gray-50 text-gray-800 font-sans flex h-screen overflow-hidden">
 
       <Sidebar />
-
       <main className="flex-1 overflow-y-auto p-8">
 
         <header className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-700">Visão Geral</h1>
-          <div className="text-sm text-gray-500">Atualizado agora</div>
         </header>
 
         {loading && <div>Carregando dashboard...</div>}
@@ -47,4 +44,3 @@ const DashboardPage = () => {
   );
 };
 
-export default DashboardPage;

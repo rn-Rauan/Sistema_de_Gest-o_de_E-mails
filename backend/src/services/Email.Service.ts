@@ -176,10 +176,28 @@ export class EmailService implements IEmailService {
    */
   public async getTendence7Days(): Promise<{ data: string; count: number }[]> {
     try {
-      return await this.repository.tendence7Days();
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+      const results = await this.repository.findEmailsFrom(sevenDaysAgo);
+
+      const agrupadosPorData: Record<string, number> = {};
+      for (let i: number = 0; i < results.length; i++) {
+        const email = results[i]!;
+        const dia = email.dataEnvio.toISOString().split("T")[0]!;
+
+        agrupadosPorData[dia] = (agrupadosPorData[dia] || 0) + 1;
+      }
+
+      return Object.entries(agrupadosPorData).map(([data, count]) => ({
+        data,
+        count,
+      }));
     } catch (err) {
       throw new AppError(
-        `Erro ao buscar os emails dos ultimos 7 dias: ${(err as Error).message}`,
+        `Erro ao buscar os emails dos ultimos 7 dias: ${
+          (err as Error).message
+        }`,
         500,
         err as Error
       );

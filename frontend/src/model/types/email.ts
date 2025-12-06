@@ -6,6 +6,6 @@ export interface Email {
   assunto: string;
   corpo: string;
   estado: string | null;
-  municipio: string | null;
+  municipio: string;
   criadoEm: string;
 }

@@ -25,8 +25,10 @@ const app = fastify({ logger: true });
 
 // Registrando o CORS
 await app.register(cors, {
-  origin: "*", // Em produção, restrinja para o domínio do seu frontend
-});
+  origin: "*",
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] 
+})
+
 
 // Registrando Swagger
 await app.register(fastifySwagger, {
